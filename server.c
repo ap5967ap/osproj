@@ -1,10 +1,76 @@
 #include"server.h"
 
+
+int get_id()
+{
+    struct flock lock;
+    lock.l_type=F_RDLCK;
+    lock.l_whence=SEEK_SET;
+    int fd=open("books.txt",O_RDONLY,0666);
+    int offset=lseek(fd,-1*sizeof(struct Book),SEEK_END);
+    lock.l_start=offset;
+    if(lock.l_start<=0)
+        return 1;
+    lock.l_len=sizeof(struct Book);
+    lock.l_pid=getpid();
+    fcntl(fd,F_SETLKW,&lock);
+    struct Book temp;
+    read(fd,&temp,sizeof(struct Book));
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    return temp.id+1;
+}
 void add_book(int nsd)
 {
-    
-}
+    struct Book temp;
+    bzero(&temp,sizeof(struct Book));
+    int id=get_id();
+    temp.id=id;
+    read(nsd,&temp,sizeof(struct Book));
+    printf("Title: %s\n",temp.title);
+    printf("Author: %s\n",temp.author);
+    printf("Copies: %d\n",temp.copies);
+    printf("ID: %d\n",temp.id);
+    struct flock lock;
+    int fd=open("books.txt",O_WRONLY|O_CREAT,0666);
+    lock.l_type=F_WRLCK;
+    lock.l_whence=SEEK_SET;
+    lock.l_len=0;
+    lock.l_start=0;
+    lock.l_pid=0;
+    fcntl(fd,F_SETLKW,&lock);
+    lseek(fd,0,SEEK_END);
+    write(fd,&temp,sizeof(struct Book));
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
+    get_all_books(nsd);
 
+}
+void get_all_books(int nsd)
+{
+    struct Book books[100];
+    int fd=open("books.txt",O_RDONLY,0666);
+    struct flock lock;
+    lock.l_type=F_RDLCK;
+    lock.l_whence=SEEK_SET;
+    lock.l_start=0;
+    lock.l_len=0;
+    lock.l_pid=getpid();
+    fcntl(fd,F_SETLKW,&lock);
+    int i=0;
+    while(read(fd,&books[i],sizeof(struct Book)))
+    {
+        i++;
+    }
+    lock.l_type=F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    // write(nsd,&i,sizeof(int));
+    for(int j=0;j<i;j++)
+    {
+        write(1,&books[j],sizeof(struct Book));
+    }
+}
 
 void admin_mode(int nsd)
 {
@@ -12,21 +78,26 @@ void admin_mode(int nsd)
     {
         int choice;
         read(nsd,&choice,sizeof(choice));
+        printf("Choice: %d\n",choice);
         if(choice==1)
         {
             add_book(nsd);
         }
-        if(choice==2)
+        else if(choice==2)
         {
             // delete_book(nsd);
         }
-        if(choice==3)
+        else if(choice==3)
         {
             // modify_book(nsd);
         }
-        if(choice==4)
+        else if(choice==4)
         {
             // add_user(nsd);
+        }
+        else
+        {
+            return;
         }
     }
 }
@@ -65,6 +136,7 @@ void *func(void *args)
     if(strcmp(u.password,temp.password))
         ok=-1;
     else ok=strcmp(u.password,temp.password);
+    // ok=0;
     write(nsd,&ok,sizeof(int));
     if(ok==0)
     {
@@ -84,7 +156,7 @@ int main()
     serv.sin_port=htons(PORT);
     bind(sd,(struct sockaddr*)&serv,sizeof(serv));
     listen(sd,50);
-    printf("Server listening.. on port \n");
+    printf("Server listening.. on port %d\n",PORT);
     while(1)
     {
         len=sizeof(cli);

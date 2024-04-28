@@ -29,6 +29,7 @@
 #include<pthread.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <strings.h>
 #include <arpa/inet.h>
 #define pr perror
 #define PORT 5000
@@ -40,5 +41,9 @@
 void admin_mode(int);
 void add_book(int);
 void remove_book(int);
+void modify_book(int);
+void add_user(int);
+void get_all_books(int);
+
 // void
 #endif // !SERVER_H
