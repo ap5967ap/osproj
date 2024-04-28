@@ -9,12 +9,38 @@
 #include <string.h>
 #include "structs.h"
 
-void showAdminMenu(int sd){
+void handleAdmin(int sd){
     printf("Choose option:\n");
-    printf("1. Add a new book.\n");;
+    printf("1. Add a new book.\n");
     printf("2. Delete a book.\n");
     printf("3. Modify a book.\n");
     printf("4. Add a new user.\n");
+    printf("5. Logout \n");
+    int response;
+    scanf("%d",&response);
+    write(sd,&response,sizeof(int));
+
+    if(response==1){
+        struct Book b; 
+        printf("Enter name of the book: ");
+        scanf("%s",b.title);
+        printf("Enter name of Author: ");
+        scanf("%s",b.author);
+        printf("Enter number of copies available: ");
+        scanf("%d",&b.copies);
+        b.id=-1;
+        b.valid = true;
+        write(sd,&b,sizeof(b));
+    }
+}
+
+void showUserMenu(int sd){
+    printf("Choose option:\n");
+    printf("1. Check all available books.\n");;
+    printf("2. Issue book \n");
+    printf("3. Return book.\n");
+    printf("5. Logout \n");
+
     int response;
     scanf("%d",&response);
     write(sd,&response,sizeof(int));
@@ -58,20 +84,19 @@ int main(){
         printf("admin\n");
 
         while(1){
-            showAdminMenu(sd);
+            handleAdmin(sd);
         }
     } 
     else if(authstat == 1){
-        printf("Logged in Successfully\n");
-        printf("normal\n");
+        printf("Logged in Successfully as user\n");
+        printf("user\n");
+        while(1){
+            showUserMenu(sd);
+        }
     }
     else {
         printf("Authentication Failed\n");
         return -1;
     }
-
-
-
-
 
 }
