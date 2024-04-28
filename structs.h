@@ -9,9 +9,9 @@ struct User{
 };
 struct Book
 {
-    char title[BUFSIZ];
-    char author[BUFSIZ];
-    bool valid;
+    char title[100];
+    char author[100];
+    // bool valid;
     int copies;
     int id;
 };

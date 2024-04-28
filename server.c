@@ -25,52 +25,70 @@ void add_book(int nsd)
     struct Book temp;
     bzero(&temp,sizeof(struct Book));
     int id=get_id();
-    temp.id=id;
+    temp.id=1;
     read(nsd,&temp,sizeof(struct Book));
     printf("Title: %s\n",temp.title);
     printf("Author: %s\n",temp.author);
     printf("Copies: %d\n",temp.copies);
     printf("ID: %d\n",temp.id);
-    struct flock lock;
+    // struct flock lock;
     int fd=open("books.txt",O_WRONLY|O_CREAT,0666);
-    lock.l_type=F_WRLCK;
-    lock.l_whence=SEEK_SET;
-    lock.l_len=0;
-    lock.l_start=0;
-    lock.l_pid=0;
-    fcntl(fd,F_SETLKW,&lock);
+    // lock.l_type=F_WRLCK;
+    // lock.l_whence=SEEK_SET;
+    // lock.l_len=0;
+    // lock.l_start=0;
+    // lock.l_pid=0;
+    // fcntl(fd,F_SETLKW,&lock);
     lseek(fd,0,SEEK_END);
     write(fd,&temp,sizeof(struct Book));
-    lock.l_type=F_UNLCK;
-    fcntl(fd,F_SETLKW,&lock);
+    // lock.l_type=F_UNLCK;
+    // fcntl(fd,F_SETLKW,&lock);
     close(fd);
-    get_all_books(nsd);
+    get_all_books();
 
 }
-void get_all_books(int nsd)
+void get_all_books()
 {
-    struct Book books[100];
+    struct Book temp;
     int fd=open("books.txt",O_RDONLY,0666);
-    struct flock lock;
-    lock.l_type=F_RDLCK;
-    lock.l_whence=SEEK_SET;
-    lock.l_start=0;
-    lock.l_len=0;
-    lock.l_pid=getpid();
-    fcntl(fd,F_SETLKW,&lock);
-    int i=0;
-    while(read(fd,&books[i],sizeof(struct Book)))
+    read(fd,&temp,sizeof(struct Book));
+    printf("Title: %s\n",temp.title);
+    printf("Author: %s\n",temp.author);
+    printf("Copies: %d\n",temp.copies);
+    printf("ID: %d\n",temp.id);
+    // close(fd);
+    while(read(fd,&temp,sizeof(struct Book)))
     {
-        i++;
-    }
-    lock.l_type=F_UNLCK;
-    fcntl(fd,F_SETLKW,&lock);
-    // write(nsd,&i,sizeof(int));
-    for(int j=0;j<i;j++)
-    {
-        write(1,&books[j],sizeof(struct Book));
+        printf("Title: %s\n",temp.title);
+        printf("Author: %s\n",temp.author);
+        printf("Copies: %d\n",temp.copies);
+        printf("ID: %d\n",temp.id);
     }
 }
+// void get_all_books(int nsd)
+// {
+    // struct Book books[100];
+    // int fd=open("books.txt",O_RDONLY,0666);
+    // struct flock lock;
+    // lock.l_type=F_RDLCK;
+    // lock.l_whence=SEEK_SET;
+    // lock.l_start=0;
+    // lock.l_len=0;
+    // lock.l_pid=getpid();
+    // fcntl(fd,F_SETLKW,&lock);
+    // int i=0;
+    // while(read(fd,&books[i],sizeof(struct Book)))
+    // {
+    //     i++;
+    // }
+    // lock.l_type=F_UNLCK;
+    // fcntl(fd,F_SETLKW,&lock);
+    // // write(nsd,&i,sizeof(int));
+    // for(int j=0;j<i;j++)
+    // {
+    //     write(1,&books[j],sizeof(struct Book));
+    // }
+// }
 
 void admin_mode(int nsd)
 {

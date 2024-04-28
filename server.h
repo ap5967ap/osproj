@@ -43,7 +43,7 @@ void add_book(int);
 void remove_book(int);
 void modify_book(int);
 void add_user(int);
-void get_all_books(int);
+void get_all_books();
 
 // void
 #endif // !SERVER_H

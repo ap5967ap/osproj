@@ -29,7 +29,7 @@ void handleAdmin(int sd){
         printf("Enter number of copies available: ");
         scanf("%d",&b.copies);
         b.id=-1;
-        b.valid = true;
+        // b.valid = true;
         write(sd,&b,sizeof(b));
     }
 }
@@ -51,7 +51,7 @@ int main(){
 
     int sd = socket(AF_INET,SOCK_STREAM,0);
 
-    server.sin_addr.s_addr = inet_addr("192.168.42.181");
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
     server.sin_port = htons(5000);
 
