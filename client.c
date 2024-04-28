@@ -11,7 +11,7 @@
 
 void showAdminMenu(int sd){
     printf("Choose option:\n");
-    printf("1. Add a new book.\n");
+    printf("1. Add a new book.\n");;
     printf("2. Delete a book.\n");
     printf("3. Modify a book.\n");
     printf("4. Add a new user.\n");
