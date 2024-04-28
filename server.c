@@ -1,6 +1,10 @@
 #include"server.h"
 
-void add
+void add_book(int nsd)
+{
+    
+}
+
 
 void admin_mode(int nsd)
 {
@@ -10,7 +14,7 @@ void admin_mode(int nsd)
         read(nsd,&choice,sizeof(choice));
         if(choice==1)
         {
-            // add_book(nsd);
+            add_book(nsd);
         }
         if(choice==2)
         {

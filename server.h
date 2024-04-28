@@ -33,12 +33,7 @@
 #define pr perror
 #define PORT 5000
 
-struct User
-{
-    char username[100];
-    char password[100];
-    int type;
-};
+
 
 
 
